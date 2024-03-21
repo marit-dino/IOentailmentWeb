@@ -1,0 +1,156 @@
+options {
+  VISITOR = true;
+  STATIC = false;
+}
+
+PARSER_BEGIN(PairParser)
+package parser;
+
+import util.Type;
+import parser.SimpleNode;
+
+public class PairParser {}
+
+PARSER_END(PairParser)
+
+SKIP : { " " }
+
+TOKEN : { < EOL: "\n" | "\r" | "\r\n" >}
+TOKEN : { < VAR : (["a"-"z","A"-"E", "G"-"S", "U"-"Z", "_", "0" - "9"])+ > }
+TOKEN : { < TRUE: "T" > }
+TOKEN : { < FALSE: "F" > }
+TOKEN : { < AND: "&" > }
+TOKEN : { < OR: "|" > }
+TOKEN : { < NEG: "~" > }
+TOKEN : { < IMP: "->" > }
+TOKEN : { < EQ: "<->" > }
+
+SimpleNode GetGoalPair() :
+{}
+{
+  Pair()    (<EOL>|<EOF>)
+  {jjtThis.jjtSetValue(Type.ROOT);
+  return jjtThis;}
+}
+
+SimpleNode GetDerivingPairs() :
+{}
+{
+  (Pair()
+  ("," Pair())*)?
+   (<EOL>|<EOF>)
+  {jjtThis.jjtSetValue(Type.ROOT);
+  return jjtThis;}
+}
+
+void Pair() :
+{}
+{
+  "(" Formula() "," Formula() ")"
+   {jjtThis.jjtSetValue(Type.PAIR);}
+}
+
+void Formula() #void :
+{
+}
+{
+  (
+  Identifier()
+  |
+  TruthValue()
+  |   
+    UnaryOperation()
+  | 
+    "("
+      BinaryOperation()
+    ")"
+  )
+}
+void UnaryOperation() #void:
+{}
+{
+    Negation()
+}
+
+void BinaryOperation() #void:
+{}
+{
+    (
+      LOOKAHEAD(Conjunction())
+      Conjunction()
+    |
+      LOOKAHEAD(Disjunction())
+      Disjunction()
+    |
+      LOOKAHEAD(Implication())
+      Implication()
+    | 
+      LOOKAHEAD(Equivalence())
+      Equivalence()
+  )
+}
+
+void Identifier() #VAR: 
+{
+  Token t;
+}
+{
+  t = <VAR>
+  {jjtThis.jjtSetValue(t.image);}
+}
+
+void TruthValue() #void:
+{}
+{
+    True() | False()
+}
+
+void True() #TRUE:
+{}
+{
+    <TRUE>
+  {jjtThis.jjtSetValue(Type.TRUE);}
+}
+
+void False() #FALSE:
+{}
+{
+    <FALSE>
+  {jjtThis.jjtSetValue(Type.FALSE);}
+}
+
+void Conjunction() #CON:
+{}
+{
+  Formula() <AND> Formula()
+  {jjtThis.jjtSetValue(Type.CON);}
+}
+
+void Disjunction() #DIS:
+{}
+{
+  Formula() <OR> Formula()
+  {jjtThis.jjtSetValue(Type.DIS);}
+}
+
+void Implication() #IMP:
+{}
+{
+  Formula() <IMP> Formula() 
+  {jjtThis.jjtSetValue(Type.IMP);}
+}
+
+void Negation() #NEG:
+{}
+{
+  <NEG> Formula()
+  {jjtThis.jjtSetValue(Type.NEG);}
+}
+
+void Equivalence() #EQ:
+{}
+{
+  Formula() <EQ> Formula()
+  {jjtThis.jjtSetValue(Type.EQ);}
+}
+

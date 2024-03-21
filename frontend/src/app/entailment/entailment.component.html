@@ -1,0 +1,14 @@
+<div>
+  <label for="goal">Goal pair: </label>
+  <input id="goal" [(ngModel)]="problem.goalPair" placeholder="">
+</div>
+<div>
+  <label for="deriving">Deriving pairs: </label>
+  <input id="deriving" [(ngModel)]="problem.derivingPairs" placeholder="">
+</div>
+<div>
+  <label for="logic">logic: </label>
+  <input id="logic" [(ngModel)]="problem.type" placeholder="">
+</div>
+<div *ngIf="problem.entails!=undefined">{{problem.entails}}</div>
+<button (click)="sendProblem()">solve</button>
