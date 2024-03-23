@@ -1,14 +1,71 @@
-<div>
-  <label for="goal">Goal pair: </label>
-  <input id="goal" [(ngModel)]="problem.goalPair" placeholder="">
-</div>
-<div>
-  <label for="deriving">Deriving pairs: </label>
-  <input id="deriving" [(ngModel)]="problem.derivingPairs" placeholder="">
-</div>
-<div>
-  <label for="logic">logic: </label>
-  <input id="logic" [(ngModel)]="problem.type" placeholder="">
-</div>
-<div *ngIf="problem.entails!=undefined">{{problem.entails}}</div>
-<button (click)="sendProblem()">solve</button>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Entailment Problem</title>
+</head>
+<body>
+<form class="container" [formGroup]="inputForm" (ngSubmit)="sendProblem(inputForm.value)">
+  <div class="gpInput">
+    <label class="form-label row fw-bold" for="goal">Goal pair: </label>
+    <input class="form-control row"  id="goal" formControlName="goalPair" placeholder="">
+    <span class="text-danger form-text"
+          *ngIf="submitted && problem.goalPair.length == 0">
+      Goal Pair is required
+    </span>
+  </div>
+  <div class="dpInput">
+    <label class="form-label fw-bold row" for="deriving">Deriving pairs: </label>
+    <input class="form-control row" id="deriving" formControlName="derivingPairs" placeholder="">
+  </div>
+
+  <div class="logicInput">
+    <label class="form-label fw-bold" for="radioType">Logic: </label>
+    <div id="radioType">
+        <div class="form-check form-check-inline" >
+          <input class="form-check-input" id="radio1" type="radio" name="type" formControlName="type" value="OUT1">
+          <label class="form-check-label" for="radio1">OUT1</label>
+        </div>
+        <div class="form-check form-check-inline" >
+          <input class="form-check-input" id="radio2" type="radio" name="type" formControlName="type" value="OUT2">
+          <label class="form-check-label" for="radio2">OUT2</label>
+        </div>
+        <div class="form-check form-check-inline" >
+          <input class="form-check-input" id="radio3" type="radio" name="type" formControlName="type" value="OUT3">
+          <label class="form-check-label" for="radio3">OUT3</label>
+        </div>
+        <div class="form-check form-check-inline" >
+          <input class="form-check-input" id="radio4" type="radio" name="type" formControlName="type" value="OUT4">
+          <label class="form-check-label" for="radio4">OUT4</label>
+        </div>
+       <div class="form-check form-check-inline" >
+          <input class="form-check-input" id="radio5" type="radio" name="type" formControlName="type" value="OUT1C">
+          <label class="form-check-label" for="radio5">OUT1C</label>
+        </div>
+        <div class="form-check form-check-inline" >
+          <input class="form-check-input" id="radio6" type="radio" name="type" formControlName="type" value="OUT2C">
+          <label class="form-check-label" for="radio6">OUT2C</label>
+        </div>
+        <div class="form-check form-check-inline" >
+          <input class="form-check-input" id="radio7" type="radio" name="type" formControlName="type" value="OUT3C">
+          <label class="form-check-label" for="radio7">OUT3C</label>
+        </div>
+        <div class="form-check form-check-inline" >
+          <input class="form-check-input" id="radio8" type="radio" name="type" formControlName="type" value="OUT8">
+          <label class="form-check-label" for="radio8">OUT4C</label>
+        </div>
+    </div>
+    <span class="text-danger"
+          *ngIf="submitted && problem.type.length == 0">
+      Logic is required
+    </span>
+  </div>
+  <div *ngIf="entails!=undefined">{{entails}}</div>
+  <button class="btn btn-outline-primary" [disabled]="!inputForm.valid" type="submit">solve</button>
+</form>
+</body>
+</html>
+
+
+

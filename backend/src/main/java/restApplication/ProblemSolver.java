@@ -1,4 +1,4 @@
-package RestApplication.application;
+package restApplication;
 
 import encoding.IOLogics.causal.OUT_1_C;
 import encoding.IOLogics.causal.OUT_2_C;
@@ -8,27 +8,34 @@ import encoding.IOLogics.originals.OUT_1;
 import encoding.IOLogics.originals.OUT_2;
 import encoding.IOLogics.originals.OUT_3;
 import encoding.IOLogics.originals.OUT_4;
-import util.IOLogic;
 import encoding.EntailmentProblem;
 import parser.ParseException;
 import parser.TokenMgrError;
 import parser.NodeVisitor;
+import restApplication.exceptions.DerivingPairsParseException;
+import restApplication.exceptions.GoalPairParseException;
+import restApplication.exceptions.IllegalLogicException;
 import util.DagNode;
 import parser.PairParser;
 import parser.SimpleNode;
-import RestApplication.Entity.Problem;
+
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import util.Type;
 
 public class ProblemSolver {
 
-    public static boolean solveProblem(Problem problem) throws ParseException {
-        EntailmentProblem p = getInput(problem);
+    /**
+     * Solves the entailment problem for the problem given.
+     *
+     * @param problemInput to be solved
+     * @return whether deriving pairs entail goal pair or not //TODO exceptions
+     */
+    public static boolean solveProblem(ProblemInput problemInput) throws GoalPairParseException, DerivingPairsParseException, IllegalLogicException {
+        if(problemInput.isFieldNull())  throw new IllegalArgumentException("A field is undefined");
+        EntailmentProblem p = getInput(problemInput);
         return p.entails();
     }
 
@@ -36,46 +43,55 @@ public class ProblemSolver {
     /**
      * Takes the input from the user and returns the corresponding entailment problem.
      *
-     * @param in line reader for the terminal
+     * @param p input that is transformed into an instance of the entailment problem
      * @return instance of the entailment problem with the deriving pairs, goal pair and the I/O Logic
      */
-    private static EntailmentProblem getInput(Problem p) throws ParseException {
-            //TODO nullchecks
-        //TODO restApplication instead of R..
-            InputStream stream = new ByteArrayInputStream(p.getDerivingPairs().getBytes(StandardCharsets.UTF_8));
-            List<DagNode> derivingPairs = getDerivingPairs(new PairParser(stream));
+    private static EntailmentProblem getInput(ProblemInput p) throws GoalPairParseException, DerivingPairsParseException, IllegalLogicException {
+        InputStream stream = new ByteArrayInputStream(p.getDerivingPairs().getBytes(StandardCharsets.UTF_8));
+        List<DagNode> derivingPairs;
+        try {
+            derivingPairs = getDerivingPairs(new PairParser(stream));
+        }
+        catch (ParseException e){
+            throw new DerivingPairsParseException(e.getMessage());
+        }
 
         stream = new ByteArrayInputStream(p.getGoalPair().getBytes(StandardCharsets.UTF_8));
+        DagNode goalPair;
+        try {
+            goalPair = getGoalPair(new PairParser(stream));
+        }
+        catch (ParseException e){
+            throw new GoalPairParseException(e.getMessage());
+        }
 
-        DagNode goalPair = getGoalPair(new PairParser(stream));
-
-            switch (p.getType()) {
-                case "OUT1C" -> {
-                    return new OUT_1_C(goalPair, derivingPairs);
-                }
-                case "OUT2C" -> {
-                    return new OUT_2_C(goalPair, derivingPairs);
-                }
-                case "OUT3C" -> {
-                    return new OUT_3_C(goalPair, derivingPairs);
-                }
-                case "OUT4C" -> {
-                    return new OUT_4_C(goalPair, derivingPairs);
-                }
-                case "OUT1" -> {
-                    return new OUT_1(goalPair, derivingPairs);
-                }
-                case "OUT2" -> {
-                    return new OUT_2(goalPair, derivingPairs);
-                }
-                case "OUT3" -> {
-                    return new OUT_3(goalPair, derivingPairs);
-                }
-                case "OUT4" -> {
-                    return new OUT_4(goalPair, derivingPairs);
-                }
-                default -> throw new RuntimeException("Unexpected I/O Logic encountered."); //TODO
+        switch (p.getType()) {
+            case "OUT1C" -> {
+                return new OUT_1_C(goalPair, derivingPairs);
             }
+            case "OUT2C" -> {
+                return new OUT_2_C(goalPair, derivingPairs);
+            }
+            case "OUT3C" -> {
+                return new OUT_3_C(goalPair, derivingPairs);
+            }
+            case "OUT4C" -> {
+                return new OUT_4_C(goalPair, derivingPairs);
+            }
+            case "OUT1" -> {
+                return new OUT_1(goalPair, derivingPairs);
+            }
+            case "OUT2" -> {
+                return new OUT_2(goalPair, derivingPairs);
+            }
+            case "OUT3" -> {
+                return new OUT_3(goalPair, derivingPairs);
+            }
+            case "OUT4" -> {
+                return new OUT_4(goalPair, derivingPairs);
+            }
+            default -> throw new IllegalLogicException("Unexpected I/O Logic encountered.");
+        }
     }
 
 

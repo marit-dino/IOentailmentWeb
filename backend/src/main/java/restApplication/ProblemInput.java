@@ -1,15 +1,16 @@
-package RestApplication.Entity;
-
-import util.Type;
+package restApplication;
 
 import java.util.Objects;
 
-public class Problem {
+/**
+ * Represent the entailment problem.
+ */
+public class ProblemInput {
     private String derivingPairs;
     private String goalPair;
     private String type;
 
-    public Problem(String derivingPairs, String goalPair, String type) {
+    public ProblemInput(String derivingPairs, String goalPair, String type) {
         this.derivingPairs = derivingPairs;
         this.goalPair = goalPair;
         this.type = type;
@@ -43,8 +44,8 @@ public class Problem {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Problem problem = (Problem) o;
-        return Objects.equals(derivingPairs, problem.derivingPairs) && Objects.equals(goalPair, problem.goalPair) && type == problem.type;
+        ProblemInput problemInput = (ProblemInput) o;
+        return Objects.equals(derivingPairs, problemInput.derivingPairs) && Objects.equals(goalPair, problemInput.goalPair) && type == problemInput.type;
     }
 
     @Override
@@ -59,5 +60,9 @@ public class Problem {
                 ", goalPair='" + goalPair + '\'' +
                 ", type='" + type + '\'' +
                 '}';
+    }
+
+    public boolean isFieldNull(){
+        return (this.derivingPairs == null) || (this.goalPair == null) || (this.type == null);
     }
 }
