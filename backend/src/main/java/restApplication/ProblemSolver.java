@@ -52,7 +52,7 @@ public class ProblemSolver {
         try {
             derivingPairs = getDerivingPairs(new PairParser(stream));
         }
-        catch (ParseException e){
+        catch (ParseException | TokenMgrError e){
             throw new DerivingPairsParseException(e.getMessage());
         }
 
@@ -61,7 +61,7 @@ public class ProblemSolver {
         try {
             goalPair = getGoalPair(new PairParser(stream));
         }
-        catch (ParseException e){
+        catch (ParseException | TokenMgrError e){
             throw new GoalPairParseException(e.getMessage());
         }
 

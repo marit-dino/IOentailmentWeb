@@ -28,14 +28,8 @@ public class Controller {
     @PostMapping("/entailment")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public boolean postEntailmentProblem(
-            @RequestBody ProblemInput problemInput) {
-        try{
+    public boolean postEntailmentProblem(@RequestBody ProblemInput problemInput) {
             return ProblemSolver.solveProblem(problemInput);
-        }
-        catch(GoalPairParseException | DerivingPairsParseException | IllegalLogicException e){
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage(), e);
-        }
     }
 
 

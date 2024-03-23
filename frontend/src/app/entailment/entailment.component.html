@@ -7,63 +7,116 @@
 </head>
 <body>
 <form class="container" [formGroup]="inputForm" (ngSubmit)="sendProblem(inputForm.value)">
-  <div class="gpInput">
-    <label class="form-label row fw-bold" for="goal">Goal pair: </label>
-    <input class="form-control row"  id="goal" formControlName="goalPair" placeholder="">
-    <span class="text-danger form-text"
-          *ngIf="submitted && problem.goalPair.length == 0">
-      Goal Pair is required
-    </span>
-  </div>
   <div class="dpInput">
     <label class="form-label fw-bold row" for="deriving">Deriving pairs: </label>
     <input class="form-control row" id="deriving" formControlName="derivingPairs" placeholder="">
+    <span class="text-danger form-text" *ngIf="errorMessageDP != ''">
+     {{errorMessageDP}}
+    </span>
+  </div>
+  <div class="gpInput">
+    <label class="form-label row fw-bold" for="goal">Goal pair: </label>
+    <input class="form-control row"  id="goal" formControlName="goalPair" placeholder="">
+    <span class="text-danger form-text" *ngIf="errorMessageGP != ''">
+     {{errorMessageGP}}
+    </span>
   </div>
 
   <div class="logicInput">
-    <label class="form-label fw-bold" for="radioType">Logic: </label>
-    <div id="radioType">
+    <label class="form-label fw-bold logiclabel" for="radioType"> Logic: </label>
+    <div id="radioType" class="d-flex justify-content-around">
         <div class="form-check form-check-inline" >
           <input class="form-check-input" id="radio1" type="radio" name="type" formControlName="type" value="OUT1">
-          <label class="form-check-label" for="radio1">OUT1</label>
+          <label class="form-check-label" for="radio1">OUT  <sub>1</sub></label>
         </div>
         <div class="form-check form-check-inline" >
           <input class="form-check-input" id="radio2" type="radio" name="type" formControlName="type" value="OUT2">
-          <label class="form-check-label" for="radio2">OUT2</label>
+          <label class="form-check-label" for="radio2">OUT  <sub>2</sub></label>
         </div>
         <div class="form-check form-check-inline" >
           <input class="form-check-input" id="radio3" type="radio" name="type" formControlName="type" value="OUT3">
-          <label class="form-check-label" for="radio3">OUT3</label>
+          <label class="form-check-label" for="radio3">OUT  <sub>3</sub></label>
         </div>
         <div class="form-check form-check-inline" >
           <input class="form-check-input" id="radio4" type="radio" name="type" formControlName="type" value="OUT4">
-          <label class="form-check-label" for="radio4">OUT4</label>
+          <label class="form-check-label" for="radio4">OUT  <sub>4</sub></label>
         </div>
        <div class="form-check form-check-inline" >
           <input class="form-check-input" id="radio5" type="radio" name="type" formControlName="type" value="OUT1C">
-          <label class="form-check-label" for="radio5">OUT1C</label>
+          <label class="form-check-label" for="radio5">OUT  <sub>1</sub> <sup> ⊥ </sup></label>
         </div>
         <div class="form-check form-check-inline" >
           <input class="form-check-input" id="radio6" type="radio" name="type" formControlName="type" value="OUT2C">
-          <label class="form-check-label" for="radio6">OUT2C</label>
+          <label class="form-check-label" for="radio6">OUT  <sub>2</sub> <sup> ⊥ </sup></label>
         </div>
         <div class="form-check form-check-inline" >
           <input class="form-check-input" id="radio7" type="radio" name="type" formControlName="type" value="OUT3C">
-          <label class="form-check-label" for="radio7">OUT3C</label>
+          <label class="form-check-label" for="radio7">OUT  <sub>3</sub> <sup> ⊥ </sup></label>
         </div>
         <div class="form-check form-check-inline" >
-          <input class="form-check-input" id="radio8" type="radio" name="type" formControlName="type" value="OUT8">
-          <label class="form-check-label" for="radio8">OUT4C</label>
+          <input class="form-check-input" id="radio8" type="radio" name="type" formControlName="type" value="OUT4C  ">
+          <label class="form-check-label" for="radio8"> OUT <sub>4</sub> <sup> ⊥ </sup></label>
         </div>
     </div>
-    <span class="text-danger"
-          *ngIf="submitted && problem.type.length == 0">
-      Logic is required
+    <span class="text-danger form-text" *ngIf="errorMessageLogic != ''">
+     {{errorMessageLogic}}
     </span>
   </div>
-  <div *ngIf="entails!=undefined">{{entails}}</div>
+  <div [@myTrigger] = "entails!=undefined? 'enter' : 'leave'" id="message">
+    <div @myTrigger *ngIf="entails" id="entailsMessageTrue">Deriving pairs entail the goal pair.</div>
+    <div @myTrigger *ngIf="!entails" id="entailsMessageFalse">Deriving pairs do not entail the goal pair.</div>
+  </div>
   <button class="btn btn-outline-primary" [disabled]="!inputForm.valid" type="submit">solve</button>
 </form>
+
+<div class="container text-container">
+<p>
+  Using a SAT-Solver this program efficiently solves the entailment problem for the Input/Output Logics
+  OUT <sub>1</sub>, OUT  <sub>2</sub>, OUT  <sub>3</sub>, OUT  <sub>4</sub> and their causal counterparts
+  OUT <sub>1</sub> <sup> ⊥ </sup>, OUT <sub>2</sub> <sup> ⊥ </sup>, OUT <sub>3</sub> <sup> ⊥ </sup>,  OUT <sub>4</sub> <sup> ⊥ </sup>.
+  For more information on the theoretical background see <a href="https://proceedings.kr.org/2023/15/">"Streamlining Input/Output Logics with Sequent Calculi" </a> by Ciabattoni and Rozplokhas.
+</p>
+  <span class="fw-bold"> Instructions: </span>
+  <ul>
+    <li>
+      Enter the deriving pairs (optional)
+    </li>
+  <li>
+    Enter the goal pair
+  </li>
+  <li>
+    Choose the I/O Logic
+  </li>
+  <li>
+    Press Solve or Enter
+  </li>
+  </ul>
+
+<br>
+  The goal and the deriving pairs have to be in the following EBNF-grammar, whitespace is ignored:<br><br>
+
+&lt;GoalPair&gt; ::= &lt;Pair&gt; <br>
+&lt;DerivingPairs&gt; ::= (&lt;Pair&gt; ("," &lt;Pair&gt;)*)? <br>
+&lt;Pair&gt; ::= "(" &lt;Formula&gt; "," &lt;Formula&gt; ")"<br>
+&lt;Formula&gt; ::= &lt;Var&gt; | &lt;TruthValue&gt; | &lt;UnaryOperation&gt; | "(" &lt;BinaryOperation&gt; ")"<br>
+&lt;BinaryOperation&gt; ::= &lt;Conjunction&gt; | &lt;Disjunction&gt; | &lt;Implication&gt; | &lt;Equivalence&gt;<br>
+&lt;Conjunction&gt; ::= &lt;Formula&gt; "&" &lt;Formula&gt;<br>
+&lt;Disjunction&gt; ::= &lt;Formula&gt; " | " &lt;Formula&gt;<br>
+&lt;Implication&gt; ::= &lt;Formula&gt; "-&gt;" &lt;Formula&gt;<br>
+&lt;Equivalence&gt; ::= &lt;Formula&gt; "&lt;-&gt;" &lt;Formula&gt;<br>
+&lt;UnaryOperator&gt; ::= &lt;Negation&gt;<br>
+&lt;Negation&gt; ::= "~" &lt;Formula&gt;<br>
+&lt;Var&gt; ::= (["a"-"z","A"-"E", "G"-"S", "U"-"Z", "_", "0" - "9"])+<br>
+&lt;TruthValue&gt; ::= &lt;True&gt; | &lt;False&gt;<br>
+&lt;True&gt; ::= "T"<br>
+&lt;False&gt; ::= "F"<br><br>
+                                Example for a goal pair: ((w1 & w2), (~e -&gt; (a &lt;-&gt; b)))<br>
+                                Example for deriving pairs: ((w1 & w2), (~e -&gt; (a &lt;-&gt; b))), (A, B), (~C, (e | (w1 &lt;-&gt; w2)))<br>
+
+
+
+
+</div>
 </body>
 </html>
 

@@ -2,3 +2,31 @@
   margin: 1em 1em 2em;
 }
 
+.btn {
+  margin-top: 2em;
+  padding: 0.5em 1.25em 0.5em 1.25em;
+}
+
+.container {
+  font-size: large;
+}
+
+.text-container {
+  margin-top: 8em;
+}
+
+.logiclabel {
+  padding-left: 0.4rem;
+}
+
+#entailsMessageTrue {
+  color: #3366cc;
+}
+#entailsMessageFalse {
+  color: #660066;
+}
+
+#message{
+  margin-top: 2em;
+}
+
