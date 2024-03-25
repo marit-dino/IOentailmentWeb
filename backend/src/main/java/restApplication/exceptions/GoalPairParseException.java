@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import parser.ParseException;
 
-public class GoalPairParseException extends RuntimeException {
+public class GoalPairParseException extends Exception {
     public GoalPairParseException() {
         super();
     }

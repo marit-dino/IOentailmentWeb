@@ -15,6 +15,7 @@ import parser.NodeVisitor;
 import restApplication.exceptions.DerivingPairsParseException;
 import restApplication.exceptions.GoalPairParseException;
 import restApplication.exceptions.IllegalLogicException;
+import restApplication.exceptions.ValidationException;
 import util.DagNode;
 import parser.PairParser;
 import parser.SimpleNode;
@@ -33,9 +34,9 @@ public class ProblemSolver {
      * @param problemInput to be solved
      * @return whether deriving pairs entail goal pair or not //TODO exceptions
      */
-    public static boolean solveProblem(ProblemInput problemInput) throws GoalPairParseException, DerivingPairsParseException, IllegalLogicException {
-        if(problemInput.isFieldNull())  throw new IllegalArgumentException("A field is undefined");
-        EntailmentProblem p = getInput(problemInput);
+    public static boolean solveProblem(ProblemInput problemInput) throws ValidationException{
+        EntailmentProblem p = null;
+        p = getInput(problemInput);
         return p.entails();
     }
 
@@ -46,26 +47,33 @@ public class ProblemSolver {
      * @param p input that is transformed into an instance of the entailment problem
      * @return instance of the entailment problem with the deriving pairs, goal pair and the I/O Logic
      */
-    private static EntailmentProblem getInput(ProblemInput p) throws GoalPairParseException, DerivingPairsParseException, IllegalLogicException {
-        InputStream stream = new ByteArrayInputStream(p.getDerivingPairs().getBytes(StandardCharsets.UTF_8));
-        List<DagNode> derivingPairs;
+    private static EntailmentProblem getInput(ProblemInput p) throws ValidationException {
+        List<String[]> errors = new ArrayList<>();
+
+
+        DagNode goalPair = null;
         try {
-            derivingPairs = getDerivingPairs(new PairParser(stream));
-        }
-        catch (ParseException | TokenMgrError e){
-            throw new DerivingPairsParseException(e.getMessage());
+            goalPair = getGoalPairFromInput(p);
+        } catch (GoalPairParseException e) {
+            errors.add(new String[]{e.getClass().getSimpleName(), e.getMessage()});
         }
 
-        stream = new ByteArrayInputStream(p.getGoalPair().getBytes(StandardCharsets.UTF_8));
-        DagNode goalPair;
+        List<DagNode> derivingPairs = null;
         try {
-            goalPair = getGoalPair(new PairParser(stream));
-        }
-        catch (ParseException | TokenMgrError e){
-            throw new GoalPairParseException(e.getMessage());
+            derivingPairs = getDerivingPairsFromInput(p);
+        } catch (DerivingPairsParseException e) {
+            errors.add(new String[]{e.getClass().getSimpleName(), e.getMessage()});
         }
 
-        switch (p.getType()) {
+        if(p.getType() == null) {
+            errors.add(new String[]{IllegalLogicException.class.getSimpleName(), "Field is null."});
+        }
+
+        if(!errors.isEmpty()) {
+            throw new ValidationException(errors);
+        }
+
+        switch (p.getType().strip()) {
             case "OUT1C" -> {
                 return new OUT_1_C(goalPair, derivingPairs);
             }
@@ -90,10 +98,39 @@ public class ProblemSolver {
             case "OUT4" -> {
                 return new OUT_4(goalPair, derivingPairs);
             }
-            default -> throw new IllegalLogicException("Unexpected I/O Logic encountered.");
+            default -> {
+                errors.add(new String[]{IllegalLogicException.class.getSimpleName(), "Unexpected Logic encountered"});
+                throw new ValidationException(errors);
+            }
         }
     }
 
+    private static DagNode getGoalPairFromInput(ProblemInput p) throws GoalPairParseException{
+        if(p.getGoalPair() == null) {
+            throw new GoalPairParseException("Field is null");
+        }
+        InputStream stream = new ByteArrayInputStream(p.getGoalPair().getBytes(StandardCharsets.UTF_8));
+        try {
+            return getGoalPair(new PairParser(stream));
+        }
+        catch (ParseException | TokenMgrError e) {
+            throw new GoalPairParseException(e.getMessage());
+        }
+    }
+
+    private static List<DagNode> getDerivingPairsFromInput(ProblemInput p) throws DerivingPairsParseException {
+        if(p.getDerivingPairs() == null) {
+            throw new DerivingPairsParseException("Field is null.");
+        }
+        InputStream stream = new ByteArrayInputStream(p.getDerivingPairs().getBytes(StandardCharsets.UTF_8));
+        List<DagNode> derivingPairs;
+        try {
+            return getDerivingPairs(new PairParser(stream));
+        }
+        catch (ParseException | TokenMgrError e){
+            throw new DerivingPairsParseException(e.getMessage());
+        }
+    }
 
     /**
      * Parses the user input for the goal pair according to the specified EBNF grammar of the parser and returns a dag of this input.

@@ -20,13 +20,14 @@
 }
 
 #entailsMessageTrue {
-  color: #3366cc;
+  color: #00441a;
 }
 #entailsMessageFalse {
-  color: #660066;
+  color: #5e0000;
 }
 
 #message{
   margin-top: 2em;
+  height: 1.5em;
 }
 

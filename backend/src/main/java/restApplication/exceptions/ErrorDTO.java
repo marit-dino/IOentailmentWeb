@@ -1,7 +1,6 @@
 package restApplication.exceptions;
 
 public class ErrorDTO {
-    public String status;
     public String message;
     public String cause;
     public String time;
@@ -15,14 +14,6 @@ public class ErrorDTO {
 
     public void setCause(String cause) {
         this.cause = cause;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
     public String getMessage() {

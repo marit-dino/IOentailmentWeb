@@ -2,7 +2,8 @@ import {Component, inject} from '@angular/core';
 import {CommonModule, NgIf} from '@angular/common';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import { FormBuilder } from '@angular/forms';
-import { Problem} from "../inteface/problem";
+import {Problem} from "../inteface/problem";
+import {Error} from "../inteface/error";
 import {EntailmentService} from "../service/entailment.service";
 import {animate, style, transition, trigger} from "@angular/animations";
 
@@ -17,13 +18,13 @@ import {animate, style, transition, trigger} from "@angular/animations";
   styleUrl: './entailment.component.css',
   providers: [EntailmentService],
   animations: [
-    trigger('myTrigger', [
+    trigger('trigger', [
       transition(':enter', [
         style({ opacity: 0 }),
-        animate('100ms', style({ opacity: 1 })),
+        animate('500ms', style({ opacity: 1 })),
       ]),
       transition(':leave', [
-        animate('100ms', style({ opacity: 0 }))
+        animate('0ms', style({ opacity: 0 }))
       ])
     ]),
   ]
@@ -56,7 +57,9 @@ export class EntailmentComponent {
     this.submitted = true;
     this.errorMessageDP = "";
     this.errorMessageGP = "";
-    this.errorMessageLogic = "asdf";
+    this.errorMessageLogic = "";
+    this.entails = undefined;
+
     this.entailmentService.sendProblem(this.problem)
       .subscribe({
         next: data => {
@@ -64,15 +67,22 @@ export class EntailmentComponent {
 
         },
         error: error => {
-          if(error.error.cause == "GoalPairParseException") {
-            this.errorMessageGP = error.error.message;
+          if(error.error == null) {
+            //TODO
           }
-         if(error.error.cause == "DerivingPairsParseException") {
-            this.errorMessageDP = error.error.message;
+          let arr : Error[] = error.error.errors;
+          for (let i = 0; i < arr.length; i++) {
+            if(arr[i].cause == "GoalPairParseException") {
+              this.errorMessageGP += ((this.errorMessageGP.length > 0)? '\n' : '' ) + arr[i].message;
+            }
+            if(arr[i].cause == "DerivingPairsParseException") {
+              this.errorMessageDP += ((this.errorMessageDP.length > 0)? '\n' : '' ) + arr[i].message;
+            }
+            if(arr[i].cause == "IllegalLogicException") {
+              this.errorMessageLogic += ((this.errorMessageLogic.length > 0)? '\n' : '' ) + arr[i].message;
+            }
           }
-         if(error.error.cause == "IllegalLogicException") {
-            this.errorMessageLogic = error.error.message;
-          }
+
         }
       });
   }

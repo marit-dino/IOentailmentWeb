@@ -2,9 +2,8 @@ package restApplication.exceptions;
 
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-public class IllegalLogicException extends RuntimeException{
+public class IllegalLogicException extends Exception {
     public IllegalLogicException() {
         super();
     }

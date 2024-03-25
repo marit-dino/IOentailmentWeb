@@ -10,14 +10,14 @@
   <div class="dpInput">
     <label class="form-label fw-bold row" for="deriving">Deriving pairs: </label>
     <input class="form-control row" id="deriving" formControlName="derivingPairs" placeholder="">
-    <span class="text-danger form-text" *ngIf="errorMessageDP != ''">
+    <span @trigger class="text-danger form-text" *ngIf="errorMessageDP != ''">
      {{errorMessageDP}}
     </span>
   </div>
   <div class="gpInput">
     <label class="form-label row fw-bold" for="goal">Goal pair: </label>
     <input class="form-control row"  id="goal" formControlName="goalPair" placeholder="">
-    <span class="text-danger form-text" *ngIf="errorMessageGP != ''">
+    <span @trigger class="text-danger form-text" *ngIf="errorMessageGP != ''">
      {{errorMessageGP}}
     </span>
   </div>
@@ -54,19 +54,19 @@
           <label class="form-check-label" for="radio7">OUT  <sub>3</sub> <sup> ⊥ </sup></label>
         </div>
         <div class="form-check form-check-inline" >
-          <input class="form-check-input" id="radio8" type="radio" name="type" formControlName="type" value="OUT4C  ">
+          <input class="form-check-input" id="radio8" type="radio" name="type" formControlName="type" value="OUT4C">
           <label class="form-check-label" for="radio8"> OUT <sub>4</sub> <sup> ⊥ </sup></label>
         </div>
     </div>
-    <span class="text-danger form-text" *ngIf="errorMessageLogic != ''">
+    <span @trigger class="text-danger form-text" *ngIf="errorMessageLogic != ''">
      {{errorMessageLogic}}
     </span>
   </div>
-  <div [@myTrigger] = "entails!=undefined? 'enter' : 'leave'" id="message">
-    <div @myTrigger *ngIf="entails" id="entailsMessageTrue">Deriving pairs entail the goal pair.</div>
-    <div @myTrigger *ngIf="!entails" id="entailsMessageFalse">Deriving pairs do not entail the goal pair.</div>
-  </div>
   <button class="btn btn-outline-primary" [disabled]="!inputForm.valid" type="submit">solve</button>
+  <div id="message">
+    <div @trigger *ngIf="entails" id="entailsMessageTrue">&#8658; Deriving pairs entail the goal pair.</div>
+    <div @trigger *ngIf="!entails && entails != undefined" id="entailsMessageFalse">&#8658; Deriving pairs do not entail the goal pair.</div>
+  </div>
 </form>
 
 <div class="container text-container">

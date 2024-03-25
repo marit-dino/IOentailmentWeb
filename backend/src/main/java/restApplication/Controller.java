@@ -4,11 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.server.ResponseStatusException;
-import parser.ParseException;
-import restApplication.exceptions.DerivingPairsParseException;
-import restApplication.exceptions.GoalPairParseException;
-import restApplication.exceptions.IllegalLogicException;
+import restApplication.exceptions.ValidationException;
 
 @RestController
 public class Controller {
@@ -28,7 +24,7 @@ public class Controller {
     @PostMapping("/entailment")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public boolean postEntailmentProblem(@RequestBody ProblemInput problemInput) {
+    public boolean postEntailmentProblem(@RequestBody ProblemInput problemInput) throws ValidationException {
             return ProblemSolver.solveProblem(problemInput);
     }
 
