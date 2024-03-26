@@ -9,6 +9,8 @@ import encoding.IOLogics.originals.OUT_2;
 import encoding.IOLogics.originals.OUT_3;
 import encoding.IOLogics.originals.OUT_4;
 import encoding.EntailmentProblem;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import parser.ParseException;
 import parser.TokenMgrError;
 import parser.NodeVisitor;
@@ -27,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProblemSolver {
+    private static final Logger logger = LogManager.getLogger();
 
     /**
      * Solves the entailment problem for the problem given.
@@ -36,6 +39,7 @@ public class ProblemSolver {
      * @return whether deriving pairs entail goal pair or not
      */
     public static boolean solveProblem(ProblemInput problemInput) throws ValidationException{
+        logger.trace("solveProblem({})", problemInput);
         EntailmentProblem p = null;
         p = getInput(problemInput);
         return p.entails();
@@ -50,8 +54,8 @@ public class ProblemSolver {
      * @return instance of the entailment problem with the deriving pairs, goal pair and the I/O Logic
      */
     private static EntailmentProblem getInput(ProblemInput p) throws ValidationException {
+        logger.trace("getInput({})", p);
         List<String[]> errors = new ArrayList<>();
-
 
         DagNode goalPair = null;
         try {
@@ -68,6 +72,7 @@ public class ProblemSolver {
         }
 
         if(p.getType() == null) {
+            logger.warn("Logic is null {}", p.getType());
             errors.add(new String[]{IllegalLogicException.class.getSimpleName(), "Field is null."});
         }
 
@@ -101,6 +106,7 @@ public class ProblemSolver {
                 return new OUT_4(goalPair, derivingPairs);
             }
             default -> {
+                logger.warn("Unexpected logic {} encountered", p.getType());
                 errors.add(new String[]{IllegalLogicException.class.getSimpleName(), "Unexpected Logic encountered"});
                 throw new ValidationException(errors);
             }
@@ -115,7 +121,10 @@ public class ProblemSolver {
      * @throws GoalPairParseException if parsing fails.
      */
     private static DagNode getGoalPairFromInput(ProblemInput p) throws GoalPairParseException{
+        logger.trace("getGoalPairFromInput({})", p);
+
         if(p.getGoalPair() == null) {
+            logger.warn("Goal pair is null");
             throw new GoalPairParseException("Field is null");
         }
         InputStream stream = new ByteArrayInputStream(p.getGoalPair().getBytes(StandardCharsets.UTF_8));
@@ -123,6 +132,7 @@ public class ProblemSolver {
             return getGoalPair(new PairParser(stream));
         }
         catch (ParseException | TokenMgrError e) {
+            logger.info("Parsing goal pair failed for {}", p.getGoalPair());
             throw new GoalPairParseException(e.getMessage());
         }
     }
@@ -135,7 +145,10 @@ public class ProblemSolver {
      * @throws DerivingPairsParseException if parsing fails
      */
     private static List<DagNode> getDerivingPairsFromInput(ProblemInput p) throws DerivingPairsParseException {
+        logger.trace("getDerivingPairsFromInput({})", p);
+
         if(p.getDerivingPairs() == null) {
+            logger.warn("Deriving pairs are null");
             throw new DerivingPairsParseException("Field is null.");
         }
         InputStream stream = new ByteArrayInputStream(p.getDerivingPairs().getBytes(StandardCharsets.UTF_8));
@@ -144,6 +157,7 @@ public class ProblemSolver {
             return getDerivingPairs(new PairParser(stream));
         }
         catch (ParseException | TokenMgrError e){
+            logger.info("Parsing deriving pairs failed for {}", p.getDerivingPairs());
             throw new DerivingPairsParseException(e.getMessage());
         }
     }
@@ -157,6 +171,8 @@ public class ProblemSolver {
      * @throws TokenMgrError when an unexpected token is encountered
      */
     private static DagNode getGoalPair(PairParser parser) throws ParseException, TokenMgrError {
+        logger.trace("getGoalPair({})", parser);
+
         DagNode root = new DagNode();
         NodeVisitor visitor = new NodeVisitor();
         SimpleNode start = parser.GetGoalPair();
@@ -173,6 +189,8 @@ public class ProblemSolver {
      * @throws TokenMgrError when an unexpected token is encountered
      */
     private static List<DagNode> getDerivingPairs(PairParser parser) throws ParseException, TokenMgrError {
+        logger.trace("getDerivingPairs({})", parser);
+
         DagNode root = new DagNode();
         NodeVisitor visitor = new NodeVisitor();
         SimpleNode start = parser.GetDerivingPairs();

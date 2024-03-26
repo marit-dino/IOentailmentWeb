@@ -68,7 +68,7 @@ export class EntailmentComponent {
         },
         error: error => {
           if(error.error == null) {
-            //TODO
+            console.log(error);
           }
           let arr : Error[] = error.error.errors;
           for (let i = 0; i < arr.length; i++) {

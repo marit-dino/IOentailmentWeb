@@ -3,6 +3,8 @@ package encoding.IOLogics.originals;
 import com.microsoft.z3.*;
 import encoding.EntailmentProblem;
 import encoding.IOLogics.causal.OUT_C;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import util.DagLeafNode;
 import util.DagNode;
 
@@ -12,6 +14,8 @@ import java.util.List;
  * Centralizes the common ground between the different original I/O Logics.
  */
 public abstract class OUT implements EntailmentProblem {
+    private static final Logger logger = LogManager.getLogger();
+
     private OUT_C causalCounterpart;
 
     public OUT(OUT_C causalCounterpart) {
@@ -19,6 +23,8 @@ public abstract class OUT implements EntailmentProblem {
     }
 
     public boolean entails() {
+        logger.trace("entails()");
+
         try (Context ctx = new Context();) {
             Solver s = ctx.mkSolver();
             BoolExpr causalFormula = causalCounterpart.completeFormula(ctx);
@@ -38,6 +44,8 @@ public abstract class OUT implements EntailmentProblem {
      * @return conjunction
      */
     private BoolExpr conjunction(Context ctx){
+        logger.trace("conjunction({})", ctx);
+
         BoolExpr tmp1 = ctx.mkNot(formula(ctx, causalCounterpart.getGoalPair().getChild(1)));
         List<DagNode> pairs = causalCounterpart.getDerivingPairs();
         BoolExpr[] outputs = new BoolExpr[pairs.size()];
@@ -56,6 +64,8 @@ public abstract class OUT implements EntailmentProblem {
      * @return formula of node
      */
     private BoolExpr formula(Context ctx, DagNode root){
+        logger.trace("formula({}, {})", ctx, root);
+
         switch (root.getType()) {
             case EQ -> {
                 return ctx.mkIff(formula(ctx, root.getChild(0)), formula(ctx, root.getChild(1)));

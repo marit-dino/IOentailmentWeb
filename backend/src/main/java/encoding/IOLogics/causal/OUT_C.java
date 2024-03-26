@@ -2,6 +2,8 @@ package encoding.IOLogics.causal;
 
 import com.microsoft.z3.*;
 import encoding.EntailmentProblem;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import util.DagLeafNode;
 import util.DagNode;
 
@@ -11,6 +13,8 @@ import java.util.List;
  * Centralizes the common ground between the different causal I/O Logics.
  */
 public abstract class OUT_C implements EntailmentProblem {
+    private static final Logger logger = LogManager.getLogger();
+
     private DagNode goalPair;
     private List<DagNode> derivingPairs;
     private int worlds;
@@ -27,6 +31,8 @@ public abstract class OUT_C implements EntailmentProblem {
 
 
     public boolean entails() {
+        logger.trace("entails()");
+
         try (Context ctx = new Context()) {
             Solver s = ctx.mkSolver();
             BoolExpr formula = completeFormula(ctx);
@@ -44,13 +50,17 @@ public abstract class OUT_C implements EntailmentProblem {
      * @return classical propositional formula
      */
     public BoolExpr completeFormula(Context ctx){
-            BoolExpr tmp1 = ctx.mkNot(pairFormula(goalPair, ctx));
-            BoolExpr[] pairs = new BoolExpr[derivingPairs.size()];
-            for (int i = 0; i < derivingPairs.size(); i++) {
-                pairs[i] = pairFormula(derivingPairs.get(i), ctx);
-            }
-            BoolExpr tmp2 = ctx.mkAnd(pairs);
-            return ctx.mkAnd(tmp1, tmp2);
+        logger.trace("completeFormula({})", ctx);
+
+        BoolExpr tmp1 = ctx.mkNot(pairFormula(goalPair, ctx));
+        BoolExpr[] pairs = new BoolExpr[derivingPairs.size()];
+        for (int i = 0; i < derivingPairs.size(); i++) {
+            pairs[i] = pairFormula(derivingPairs.get(i), ctx);
+        }
+        BoolExpr tmp2 = ctx.mkAnd(pairs);
+        BoolExpr complete =  ctx.mkAnd(tmp1, tmp2);
+        logger.debug("complete Formula: {}", complete);
+        return complete;
     }
 
     /**
@@ -61,6 +71,7 @@ public abstract class OUT_C implements EntailmentProblem {
      * @return classical propositional formula of the pair
      */
     private BoolExpr pairFormula(DagNode pair, Context ctx) {
+        logger.trace("pairFormula({}, {})", pair, ctx);
         return ctx.mkImplies(antecedent(pair.getChild(0), ctx), consequent(pair.getChild(1), ctx));
     }
 
@@ -72,6 +83,8 @@ public abstract class OUT_C implements EntailmentProblem {
      * @return classical propositional formula
      */
     private BoolExpr antecedent(DagNode input, Context ctx) {
+        logger.trace("antecedent({}, {})", input, ctx);
+
         BoolExpr[] copies = new BoolExpr[getWorlds()];
         for (int l = 1; l <= copies.length; l++) {
             copies[l-1] = formulaInWorld(ctx, input, l);
@@ -98,6 +111,8 @@ public abstract class OUT_C implements EntailmentProblem {
      * @return classical propositional formula
      */
     protected BoolExpr formulaInWorld(Context ctx, DagNode root, int l){
+        logger.trace("formulaInWorld({}, {}, {})", ctx, root, l);
+
         switch (root.getType()) {
             case EQ -> {
                 return ctx.mkIff(formulaInWorld(ctx, root.getChild(0), l), formulaInWorld(ctx, root.getChild(1), l));
