@@ -67,6 +67,9 @@
     <div @trigger *ngIf="entails" id="entailsMessageTrue">&#8658; Deriving pairs entail the goal pair.</div>
     <div @trigger *ngIf="!entails && entails != undefined" id="entailsMessageFalse">&#8658; Deriving pairs do not entail the goal pair.</div>
   </div>
+  <div *ngIf="serverNotReachable" class="text-danger">
+    The server is not reachable, try again later.
+  </div>
 </form>
 
 <div class="container text-container">
