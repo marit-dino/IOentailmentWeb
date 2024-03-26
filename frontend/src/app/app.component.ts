@@ -5,7 +5,9 @@ import {EntailmentComponent} from "./entailment/entailment.component";
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, EntailmentComponent],
+  imports: [
+    RouterOutlet,
+    EntailmentComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
