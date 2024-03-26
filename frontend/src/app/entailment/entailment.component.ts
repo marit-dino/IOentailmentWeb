@@ -41,6 +41,7 @@ export class EntailmentComponent {
   public errorMessageGP = "";
   public errorMessageDP = "";
   public errorMessageLogic = "";
+  public serverNotReachable = false;
   entails?: boolean = undefined;
 
   inputForm : FormGroup = new FormGroup({
@@ -53,6 +54,7 @@ export class EntailmentComponent {
   constructor(private formBuilder: FormBuilder) {}
 
   sendProblem(instance: Problem) {
+    this.serverNotReachable = false;
     this.problem = instance;
     this.submitted = true;
     this.errorMessageDP = "";
@@ -68,21 +70,22 @@ export class EntailmentComponent {
         },
         error: error => {
           if(error.error == null) {
-            console.log(error);
+            this.serverNotReachable = true;
           }
-          let arr : Error[] = error.error.errors;
-          for (let i = 0; i < arr.length; i++) {
-            if(arr[i].cause == "GoalPairParseException") {
-              this.errorMessageGP += ((this.errorMessageGP.length > 0)? '\n' : '' ) + arr[i].message;
-            }
-            if(arr[i].cause == "DerivingPairsParseException") {
-              this.errorMessageDP += ((this.errorMessageDP.length > 0)? '\n' : '' ) + arr[i].message;
-            }
-            if(arr[i].cause == "IllegalLogicException") {
-              this.errorMessageLogic += ((this.errorMessageLogic.length > 0)? '\n' : '' ) + arr[i].message;
+          else {
+            let arr: Error[] = error.error.errors;
+            for (let i = 0; i < arr.length; i++) {
+              if (arr[i].cause == "GoalPairParseException") {
+                this.errorMessageGP += ((this.errorMessageGP.length > 0) ? '\n' : '') + arr[i].message;
+              }
+              if (arr[i].cause == "DerivingPairsParseException") {
+                this.errorMessageDP += ((this.errorMessageDP.length > 0) ? '\n' : '') + arr[i].message;
+              }
+              if (arr[i].cause == "IllegalLogicException") {
+                this.errorMessageLogic += ((this.errorMessageLogic.length > 0) ? '\n' : '') + arr[i].message;
+              }
             }
           }
-
         }
       });
   }
