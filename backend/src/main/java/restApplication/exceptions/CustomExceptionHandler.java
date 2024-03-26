@@ -10,7 +10,11 @@ import java.util.*;
 @ControllerAdvice
 public class CustomExceptionHandler {
 
-
+    /**
+     * Handles ValidationException and sends all occurred errors to the client.
+     * @param ex Validation Exception
+     * @return a ResponseEntity with a representation of the errors
+     */
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<ResponseDTO> generateExceptions(ValidationException ex) {
         ResponseDTO responseDTO = new ResponseDTO();

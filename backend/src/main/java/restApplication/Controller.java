@@ -19,6 +19,7 @@ public class Controller {
      * Takes the user input and returns the solution of the entailment problem.
      *
      * @param problemInput fields of the entailment problem
+     * @throws ValidationException when parsing fails
      * @return whether deriving pairs entail goal pair or not
      */
     @PostMapping("/entailment")

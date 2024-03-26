@@ -32,7 +32,8 @@ public class ProblemSolver {
      * Solves the entailment problem for the problem given.
      *
      * @param problemInput to be solved
-     * @return whether deriving pairs entail goal pair or not //TODO exceptions
+     * @throws ValidationException if parsing fails or a field is null
+     * @return whether deriving pairs entail goal pair or not
      */
     public static boolean solveProblem(ProblemInput problemInput) throws ValidationException{
         EntailmentProblem p = null;
@@ -45,6 +46,7 @@ public class ProblemSolver {
      * Takes the input from the user and returns the corresponding entailment problem.
      *
      * @param p input that is transformed into an instance of the entailment problem
+     * @throws ValidationException if parsing fails or a field is null
      * @return instance of the entailment problem with the deriving pairs, goal pair and the I/O Logic
      */
     private static EntailmentProblem getInput(ProblemInput p) throws ValidationException {
@@ -105,6 +107,13 @@ public class ProblemSolver {
         }
     }
 
+    /**
+     * Returns the root of the goal pair from the input of the user.
+     *
+     * @param p ProblemInpuut
+     * @return root node
+     * @throws GoalPairParseException if parsing fails.
+     */
     private static DagNode getGoalPairFromInput(ProblemInput p) throws GoalPairParseException{
         if(p.getGoalPair() == null) {
             throw new GoalPairParseException("Field is null");
@@ -118,6 +127,13 @@ public class ProblemSolver {
         }
     }
 
+    /**
+     * Returns the list of deriving pairs from the user input.
+     *
+     * @param p ProblemInput
+     * @return List of pairs
+     * @throws DerivingPairsParseException if parsing fails
+     */
     private static List<DagNode> getDerivingPairsFromInput(ProblemInput p) throws DerivingPairsParseException {
         if(p.getDerivingPairs() == null) {
             throw new DerivingPairsParseException("Field is null.");

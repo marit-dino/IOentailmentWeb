@@ -1,5 +1,8 @@
 package restApplication.exceptions;
 
+/**
+ * Representation of a thrown exception in the parsing process.
+ */
 public class ErrorDTO {
     public String message;
     public String cause;
