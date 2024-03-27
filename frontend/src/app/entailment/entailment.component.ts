@@ -6,6 +6,8 @@ import {Problem} from "../inteface/problem";
 import {Error} from "../inteface/error";
 import {EntailmentService} from "../service/entailment.service";
 import {animate, style, transition, trigger} from "@angular/animations";
+import {Response} from "../inteface/response";
+import {CountermodelComponent} from "../countermodel/countermodel.component";
 
 @Component({
   selector: 'app-entailment',
@@ -13,6 +15,7 @@ import {animate, style, transition, trigger} from "@angular/animations";
   imports: [
     ReactiveFormsModule,
     CommonModule,
+    CountermodelComponent,
   ],
   templateUrl: './entailment.component.html',
   styleUrl: './entailment.component.css',
@@ -42,7 +45,7 @@ export class EntailmentComponent {
   public errorMessageDP = "";
   public errorMessageLogic = "";
   public serverNotReachable = false;
-  entails?: boolean = undefined;
+  response?: Response = undefined;
 
   inputForm : FormGroup = new FormGroup({
     derivingPairs: new FormControl<string>(this.problem.derivingPairs),
@@ -60,13 +63,12 @@ export class EntailmentComponent {
     this.errorMessageDP = "";
     this.errorMessageGP = "";
     this.errorMessageLogic = "";
-    this.entails = undefined;
+    this.response = undefined;
 
     this.entailmentService.sendProblem(this.problem)
       .subscribe({
         next: data => {
-          this.entails = data.valueOf();
-
+          this.response = data;
         },
         error: error => {
           if(error.error == null) {

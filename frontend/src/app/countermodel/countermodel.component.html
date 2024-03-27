@@ -1,0 +1,14 @@
+<div *ngIf="modelW != undefined">
+  <div *ngFor="let v of modelW | keyvalue">
+    {{v.key}} :
+    <div *ngFor="let val of v.value | keyvalue">
+      {{val.key}} : {{val.value}}
+    </div>
+  </div>
+</div>
+<div *ngIf="modelC != undefined">
+  <div *ngFor="let v of modelC | keyvalue">
+    {{v.key}} : {{v.value}}
+  </div>
+</div>
+<p>hello</p>

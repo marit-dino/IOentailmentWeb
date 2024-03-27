@@ -13,20 +13,20 @@ public class CustomExceptionHandler {
     /**
      * Handles ValidationException and sends all occurred errors to the client.
      * @param ex Validation Exception
-     * @return a ResponseEntity with a representation of the errors
+     * @return a ResponseEntity with a representation of the errors°
      */
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<ResponseDTO> generateExceptions(ValidationException ex) {
-        ResponseDTO responseDTO = new ResponseDTO();
-        responseDTO.setTime(new Date().toString());
+    public ResponseEntity<ErrorResponseDTO> generateExceptions(ValidationException ex) {
+        ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO();
+        errorResponseDTO.setTime(new Date().toString());
         for (String[] e : ex.errors) {
             ErrorDTO errorDTO = new ErrorDTO();
             errorDTO.setCause(e[0]);
             errorDTO.setMessage(e[1]);
             errorDTO.setTime(new Date().toString());
-            responseDTO.addError(errorDTO);
+            errorResponseDTO.addError(errorDTO);
         }
-        return new ResponseEntity<>(responseDTO, HttpStatus.UNPROCESSABLE_ENTITY);
+        return new ResponseEntity<>(errorResponseDTO, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
 

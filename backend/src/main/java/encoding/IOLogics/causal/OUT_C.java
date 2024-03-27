@@ -2,12 +2,14 @@ package encoding.IOLogics.causal;
 
 import com.microsoft.z3.*;
 import encoding.EntailmentProblem;
+import encoding.IOLogics.CounterModel;
+import encoding.IOLogics.CounterModelWorlds;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import util.DagLeafNode;
 import util.DagNode;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * Centralizes the common ground between the different causal I/O Logics.
@@ -18,12 +20,16 @@ public abstract class OUT_C implements EntailmentProblem {
     private DagNode goalPair;
     private List<DagNode> derivingPairs;
     private int worlds;
+    private List<BoolExpr> exprs;
+    private Model counterModel;
+    private Context ctx;
 
     public int getWorlds() {
         return worlds;
     }
 
     public OUT_C(DagNode goalPair, List<DagNode> derivingPairs, int worlds) {
+        this.exprs = new ArrayList<>();
         this.goalPair = goalPair;
         this.derivingPairs = derivingPairs;
         this.worlds = worlds;
@@ -33,15 +39,58 @@ public abstract class OUT_C implements EntailmentProblem {
     public boolean entails() {
         logger.trace("entails()");
 
-        try (Context ctx = new Context()) {
-            Solver s = ctx.mkSolver();
-            BoolExpr formula = completeFormula(ctx);
-            s.add(new BoolExpr[]{formula});
-            Status res = s.check();
-            if(res.equals(Status.UNSATISFIABLE)) return true;
+        ctx = getContext();
+        Solver s = ctx.mkSolver();
+        BoolExpr formula = completeFormula(ctx);
+        s.add(new BoolExpr[]{formula});
+        Status res = s.check();
+        if (res.equals(Status.UNSATISFIABLE)) {
+            ctx.close();
+            return true;
         }
+        this.counterModel = s.getModel();
         return false;
     }
+
+    /**
+     * Singleton getter for context
+     * @return context
+     */
+    public Context getContext() {
+        logger.trace("getContext()");
+        if(ctx == null) ctx = new Context();
+        return this.ctx;
+    }
+
+    public CounterModel getCounterModel(){
+        logger.trace("getCounterModel()");
+
+        if(counterModel == null) return null;
+        CounterModelWorlds model = new CounterModelWorlds();
+
+        for (BoolExpr expr : this.exprs) {
+            String varInWorld = expr.toString();
+            int world = getWorldOfVar(varInWorld);
+            String var = getOriginalVarName(varInWorld);
+
+            boolean value = this.counterModel.eval(expr, false).isTrue();
+            addToModel(model, var, world, value);
+        }
+        ctx.close();
+        return model;
+    }
+
+    protected abstract void addToModel(CounterModelWorlds model, String var, int world, boolean value);
+
+
+    private String getOriginalVarName(String str){
+        return str.substring(1, str.indexOf("["));
+    }
+
+    private int getWorldOfVar(String str){
+        return Integer.parseInt(str.substring(str.indexOf("[") + 1, str.indexOf("]")));
+    }
+
 
     /**
      * Returns a classical propositional formula which is unsatisfiable iff the deriving pairs entail the goal pair.
@@ -130,7 +179,9 @@ public abstract class OUT_C implements EntailmentProblem {
                 return ctx.mkNot(formulaInWorld(ctx, root.getChild(0), l));
             }
             case VAR -> {
-                return ctx.mkBoolConst(((DagLeafNode) root).getVarInWorld(l));
+                BoolExpr tmp = ctx.mkBoolConst(((DagLeafNode) root).getVarInWorld(l));
+                addExpr(tmp);
+                return tmp;
             }
             case TRUE -> {
                 return ctx.mkTrue();
@@ -148,6 +199,7 @@ public abstract class OUT_C implements EntailmentProblem {
      * @return goal pair
      */
     public DagNode getGoalPair() {
+        logger.trace("getGoalPair()");
         return goalPair;
     }
 
@@ -157,6 +209,18 @@ public abstract class OUT_C implements EntailmentProblem {
      * @return deriving pairs
      */
     public List<DagNode> getDerivingPairs() {
+        logger.trace("getDerivingPairs()");
         return derivingPairs;
     }
+
+    /**
+     * Adds expression to expression list
+     * @param expr to add
+     */
+    private void addExpr(BoolExpr expr){
+        logger.trace("addExpr({})", expr);
+        if(!exprs.contains(expr)) this.exprs.add(expr);
+    }
+
+
 }

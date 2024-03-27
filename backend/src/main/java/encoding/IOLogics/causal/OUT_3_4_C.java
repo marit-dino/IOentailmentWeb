@@ -2,6 +2,7 @@ package encoding.IOLogics.causal;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
+import encoding.IOLogics.CounterModelWorlds;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import util.DagNode;
@@ -24,5 +25,14 @@ public abstract class OUT_3_4_C extends OUT_C {
             copies[l] = formulaInWorld(ctx, output, l);
         }
         return ctx.mkAnd(copies);
+    }
+
+    @Override
+    protected void addToModel(CounterModelWorlds model, String var, int world, boolean value) {
+        if(world == 0) model.addToOut(var, world, value);
+        else {
+            model.addToIn(var, world, value);
+            model.addToOut(var, world, value);
+        }
     }
 }

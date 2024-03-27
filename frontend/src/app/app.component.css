@@ -5,3 +5,12 @@ div {
 app-entailment {
   margin: 1em;
 }
+
+.container {
+  font-size: large;
+}
+
+.text-container {
+  margin-top: 8em;
+  padding-bottom: 3em;
+}
