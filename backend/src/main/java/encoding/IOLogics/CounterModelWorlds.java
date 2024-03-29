@@ -4,40 +4,40 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CounterModelWorlds implements CounterModel {
-    private Map<String, Map<Integer, Boolean>> in;
-    private Map<String, Map<Integer, Boolean>> out;
+    private Map<String, Map<String, Boolean>> in;
+    private Map<String, Map<String, Boolean>> out;
 
     public CounterModelWorlds() {
         this.in = new HashMap<>();
         this.out = new HashMap<>();
     }
 
-    public void addToIn(String var, int world, boolean value){
+    public void addToIn(String var, String world, boolean value){
         if(!in.containsKey(var)){
             in.put(var, new HashMap<>());
         }
         in.get(var).put(world, value);
     }
-    public void addToOut(String var, int world, boolean value){
+    public void addToOut(String var, String world, boolean value){
         if(!out.containsKey(var)){
             out.put(var, new HashMap<>());
         }
         out.get(var).put(world, value);
     }
 
-    public Map<String, Map<Integer, Boolean>> getIn() {
+    public Map<String, Map<String, Boolean>> getIn() {
         return in;
     }
 
-    public void setIn(Map<String, Map<Integer, Boolean>> in) {
+    public void setIn(Map<String, Map<String, Boolean>> in) {
         this.in = in;
     }
 
-    public Map<String, Map<Integer, Boolean>> getOut() {
+    public Map<String, Map<String, Boolean>> getOut() {
         return out;
     }
 
-    public void setOut(Map<String, Map<Integer, Boolean>> out) {
+    public void setOut(Map<String, Map<String, Boolean>> out) {
         this.out = out;
     }
 }

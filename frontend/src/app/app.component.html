@@ -11,7 +11,8 @@
     Using a SAT-Solver this program efficiently solves the entailment problem for the Input/Output Logics
     OUT <sub>1</sub>, OUT  <sub>2</sub>, OUT  <sub>3</sub>, OUT  <sub>4</sub> and their causal counterparts
     OUT <sub>1</sub> <sup> ⊥ </sup>, OUT <sub>2</sub> <sup> ⊥ </sup>, OUT <sub>3</sub> <sup> ⊥ </sup>,  OUT <sub>4</sub> <sup> ⊥ </sup>.
-    For more information on the theoretical background see <a href="https://proceedings.kr.org/2023/15/">"Streamlining Input/Output Logics with Sequent Calculi" </a> by Ciabattoni and Rozplokhas.
+    For more information on the theoretical background see
+    <a href="https://proceedings.kr.org/2023/15/">"Streamlining Input/Output Logics with Sequent Calculi" </a> by Ciabattoni and Rozplokhas.
   </p>
   <span class="fw-bold"> Instructions: </span>
   <ul>
@@ -50,7 +51,28 @@
   Example for a goal pair: ((w1 & w2), (~e -&gt; (a &lt;-&gt; b)))<br>
   Example for deriving pairs: ((w1 & w2), (~e -&gt; (a &lt;-&gt; b))), (A, B), (~C, (e | (w1 &lt;-&gt; w2)))<br>
 
-
-
+<br><br>
+  <p>
+    <span class="fw-bold">Countermodels and validity:</span><br>
+    A countermodel is an I/O model (In, out) in which all the deriving pairs are valid but the goal pair is not.
+    Each logic has certain conditions regarding the size of the input set <span class="fst-italic">In</span> of the I/O model.
+    In the case of OUT <sub>1</sub>, OUT  <sub>2</sub>, OUT <sub>1</sub> <sup> ⊥ </sup>, OUT <sub>2</sub> <sup> ⊥ </sup>
+    valid refers to 1-2-validity.
+    And for OUT <sub>3</sub>, OUT  <sub>4</sub>, OUT <sub>3</sub> <sup> ⊥ </sup>, OUT <sub>4</sub> <sup> ⊥ </sup>
+    valid refers to 3-4-validity.
+  </p>
+  <ul>
+    <li>
+      An I/O pair (A, X) is 1-2-valid in an I/O model (In, out) if (∀in ∈ In. in ⊨ A) implies out ⊨ X
+      (<a href="https://proceedings.kr.org/2023/15/">Ciabattoni & Rozplokhas</a>, 2023, p. 6).
+    </li>
+    <li>
+      An I/O pair (A, X) is 3-4-valid in an I/O model (In, out) if (∀in ∈ In. in ⊨ A) implies (∀w ∈ &#123;out&#125; ∪ In. w ⊨ X)
+      (<a href="https://proceedings.kr.org/2023/15/">Ciabattoni & Rozplokhas</a>, 2023, p. 7).
+    </li>
+  </ul>
+  If in a causal I/O logic the entailment of a goal pair from the set of deriving pairs is given and X<sub>1</sub>, ..., X<sub>n</sub> ⊨ Y holds,
+  then the deriving pairs also entail the goal pair in the corresponding original I/O logic.
+  For more information see <a href="https://proceedings.kr.org/2023/15/">"Streamlining Input/Output Logics with Sequent Calculi" </a> by Ciabattoni and Rozplokhas.
 
 </div>

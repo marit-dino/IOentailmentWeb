@@ -1,14 +1,36 @@
+<div class="container">
 <div *ngIf="modelW != undefined">
-  <div *ngFor="let v of modelW | keyvalue">
-    {{v.key}} :
-    <div *ngFor="let val of v.value | keyvalue">
-      {{val.key}} : {{val.value}}
+  <p class="fw-bold">Countermodel:</p>
+  <div *ngFor="let set of modelW | keyvalue">
+    <div class="fw-bold mt-3" *ngIf="set.key == 'in'"> values in the set of input worlds <span class="fst-italic">In</span> :</div>
+    <div class="fw-bold mt-3" *ngIf="set.key == 'out'"> values in the output world <span class="fst-italic">out</span> :</div>
+    <div class="container text-center">
+      <div class="row row-cols-auto">
+        <div  *ngFor="let varname of set.value | keyvalue">
+          <div class="col" *ngFor="let val of varname.value | keyvalue">
+            v({{val.key}}, {{varname.key}}) =
+            <span *ngIf="val.value">1</span>
+            <span *ngIf="!val.value">0</span>
+          </div>
+        </div>
+      </div>
+      </div>
+  </div>
+</div>
+
+<div *ngIf="modelC != undefined">
+  <div class="fw-bold mt-3"><span class="fst-italic"> X<sub>1</sub>, ..., X<sub>n</sub> ⊨ Y</span> does not hold in classical logic:</div>
+  <div class="container text-center">
+  <div class="row row-cols-auto">
+  <div *ngFor="let set of modelC | keyvalue">
+    <div class="col" *ngFor="let val of set.value | keyvalue">
+      v({{val.key}}) =
+      <span *ngIf="val.value">1</span>
+      <span *ngIf="!val.value">0</span>
     </div>
   </div>
-</div>
-<div *ngIf="modelC != undefined">
-  <div *ngFor="let v of modelC | keyvalue">
-    {{v.key}} : {{v.value}}
+  </div>
   </div>
 </div>
-<p>hello</p>
+
+</div>

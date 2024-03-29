@@ -70,7 +70,7 @@ public abstract class OUT_C implements EntailmentProblem {
 
         for (BoolExpr expr : this.exprs) {
             String varInWorld = expr.toString();
-            int world = getWorldOfVar(varInWorld);
+            String world = getWorldOfVar(varInWorld);
             String var = getOriginalVarName(varInWorld);
 
             boolean value = this.counterModel.eval(expr, false).isTrue();
@@ -80,15 +80,19 @@ public abstract class OUT_C implements EntailmentProblem {
         return model;
     }
 
-    protected abstract void addToModel(CounterModelWorlds model, String var, int world, boolean value);
-
+    private void addToModel(CounterModelWorlds model, String var, String world, boolean value) {
+        if(world.equals("w0")) model.addToOut(var, world, value);
+        else {
+            model.addToIn(var, world, value);
+        }
+    }
 
     private String getOriginalVarName(String str){
         return str.substring(1, str.indexOf("["));
     }
 
-    private int getWorldOfVar(String str){
-        return Integer.parseInt(str.substring(str.indexOf("[") + 1, str.indexOf("]")));
+    private String getWorldOfVar(String str){
+        return str.substring(str.indexOf("[") + 1, str.indexOf("]"));
     }
 
 

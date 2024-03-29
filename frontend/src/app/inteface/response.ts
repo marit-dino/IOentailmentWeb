@@ -1,5 +1,5 @@
 export interface Response {
   entails: boolean,
-  counterModelWorlds?: Map<string, Map<number, boolean>>
-  counterModelClassical?: Map<string, boolean>
+  counterModelW?: Map<string, Map<string, Map<string, boolean>>>
+  counterModelC?: Map<string, Map<string, boolean>>
 }

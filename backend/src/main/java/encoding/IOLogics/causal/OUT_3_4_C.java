@@ -27,12 +27,4 @@ public abstract class OUT_3_4_C extends OUT_C {
         return ctx.mkAnd(copies);
     }
 
-    @Override
-    protected void addToModel(CounterModelWorlds model, String var, int world, boolean value) {
-        if(world == 0) model.addToOut(var, world, value);
-        else {
-            model.addToIn(var, world, value);
-            model.addToOut(var, world, value);
-        }
-    }
 }

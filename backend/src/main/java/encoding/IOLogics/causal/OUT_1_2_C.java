@@ -21,13 +21,5 @@ public abstract class OUT_1_2_C extends OUT_C {
         return formulaInWorld(ctx, output, 0);
     }
 
-    @Override
-    protected void addToModel(CounterModelWorlds model, String var, int world, boolean value) {
-        if(world == 0) model.addToOut(var, world, value);
-        else {
-            model.addToIn(var, world, value);
-        }
-    }
-
 
 }

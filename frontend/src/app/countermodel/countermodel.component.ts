@@ -1,6 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, model, OnInit} from '@angular/core';
 import {Response} from "../inteface/response";
-import {CommonModule} from "@angular/common";
+import {CommonModule, KeyValue} from "@angular/common";
 
 @Component({
   selector: 'app-countermodel',
@@ -13,19 +13,19 @@ import {CommonModule} from "@angular/common";
 })
 export class CountermodelComponent {
   @Input() response!: Response;
-  modelW?: Map<string, Map<number, boolean>> = undefined;
-  modelC?: Map<string,boolean> = undefined;
+  modelW?:Map<string, Map<string, Map<string, boolean>>>;
+  modelC?: Map<string, Map<string, boolean>>;
 
   ngOnInit() {
-    console.log(this.response);
-    console.log(this.response.counterModelWorlds)
-    console.log(this.response.counterModelClassical)
-    if(this.response.counterModelClassical != undefined){
-      this.modelC = this.response.counterModelClassical;
+    if(this.response.counterModelC != null){
+      this.modelC = this.response.counterModelC;
     }
-    if(this.response.counterModelWorlds != undefined){
-      this.modelW = this.response.counterModelWorlds;
+    if(this.response.counterModelW != null){
+      this.modelW = this.response.counterModelW;
     }
   }
+
+
+
 
 }

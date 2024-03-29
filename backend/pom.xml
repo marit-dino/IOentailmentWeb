@@ -27,11 +27,6 @@
         <version>7.0.13</version>
     </dependency>
     <dependency>
-        <groupId>org.jline</groupId>
-        <artifactId>jline</artifactId>
-        <version>3.25.1</version>
-    </dependency>
-    <dependency>
         <groupId>com.microsoft</groupId>
         <artifactId>z3</artifactId>
         <version>4.13.0</version>

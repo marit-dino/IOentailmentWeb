@@ -73,7 +73,7 @@
     The server is not reachable, try again later.
   </div>
 </form>
-<app-countermodel *ngIf="response != undefined" [response] = "response"></app-countermodel>
+<app-countermodel @trigger *ngIf="response != undefined" [response] = "response"></app-countermodel>
 </body>
 </html>
 

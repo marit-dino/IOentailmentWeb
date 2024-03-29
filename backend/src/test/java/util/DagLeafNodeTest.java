@@ -25,6 +25,6 @@ public class DagLeafNodeTest {
     @Test
     public void varInWorld_includesWorld() {
         DagLeafNode node = new DagLeafNode("A");
-        assertEquals(node.getVarInWorld(42), "A[42]");
+        assertEquals(node.getVarInWorld(42), "A[w42]");
     }
 }

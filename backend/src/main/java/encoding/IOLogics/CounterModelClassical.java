@@ -21,4 +21,5 @@ public class CounterModelClassical implements CounterModel {
     public void setVals(Map<String, Boolean> vals) {
         this.vals = vals;
     }
+
 }
