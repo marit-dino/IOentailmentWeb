@@ -1,13 +1,13 @@
 package encoding.IOLogics.originals;
 
 import encoding.EntailmentProblem;
-import encoding.IOLogics.causal.OUT_1_C;
-import encoding.IOLogics.causal.OUT_3_C;
+import encoding.IOLogics.*;
 import org.junit.Test;
 import parser.ParseException;
 import util.DagNode;
 
 import java.util.List;
+import java.util.Map;
 
 import static encoding.IOLogics.PairPreparer.prepareDerivingPairs;
 import static encoding.IOLogics.PairPreparer.prepareGoalPair;
@@ -106,4 +106,25 @@ public class OUT_3Test {
         assertFalse(ent.entails());
     }
 
+    @Test
+    public void NotEntails_DerivFromBot() throws ParseException {
+        List<DagNode> derivingPairs = prepareDerivingPairs("");
+        DagNode goalPair = prepareGoalPair("(F, A)");
+        EntailmentProblem ent = new OUT_3(goalPair, derivingPairs);
+        assertFalse(ent.entails());
+        CounterModel m = ent.getCounterModel();
+        assertTrue(m instanceof CounterModelClassical);
+        Map<String, Boolean> vals = ((CounterModelClassical) m).getVals();
+        assertTrue(vals.size() == 1);
+        assertFalse(vals.get("A"));
+    }
+
+
+    @Test
+    public void entails_killBoss_fromContradictoryObligations() throws ParseException {
+        List<DagNode> derivingPairs = prepareDerivingPairs("(T, lawful), (~lawful, erase), (lawful, ~erase)");
+        DagNode goalPair = prepareGoalPair("(~lawful, kill_boss)");
+        EntailmentProblem ent = new OUT_3(goalPair, derivingPairs);
+        assertTrue(ent.entails());
+    }
 }

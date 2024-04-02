@@ -67,20 +67,19 @@ public abstract class OUT_C implements EntailmentProblem {
 
         if(counterModel == null) return null;
         CounterModelWorlds model = new CounterModelWorlds();
-
         for (BoolExpr expr : this.exprs) {
-            String varInWorld = expr.toString();
-            String world = getWorldOfVar(varInWorld);
-            String var = getOriginalVarName(varInWorld);
-
-            boolean value = this.counterModel.eval(expr, false).isTrue();
-            addToModel(model, var, world, value);
+            addToModel(model, expr);
         }
         ctx.close();
         return model;
     }
 
-    private void addToModel(CounterModelWorlds model, String var, String world, boolean value) {
+    private void addToModel(CounterModelWorlds model, BoolExpr expr) {
+        String varInWorld = expr.toString();
+        String world = getWorldOfVar(varInWorld);
+        String var = getOriginalVarName(varInWorld);
+        boolean value = this.counterModel.eval(expr, false).isTrue();
+
         if(world.equals("w0")) model.addToOut(var, world, value);
         else {
             model.addToIn(var, world, value);
@@ -158,9 +157,9 @@ public abstract class OUT_C implements EntailmentProblem {
      * Returns the formula represented by a dag node in the given world l, where all instances of variables are replaced
      * by a labeled version according to the world.
      *
-     * @param ctx context
+     * @param ctx  context
      * @param root node of the formula
-     * @param l world
+     * @param l    world
      * @return classical propositional formula
      */
     protected BoolExpr formulaInWorld(Context ctx, DagNode root, int l){
@@ -183,7 +182,9 @@ public abstract class OUT_C implements EntailmentProblem {
                 return ctx.mkNot(formulaInWorld(ctx, root.getChild(0), l));
             }
             case VAR -> {
-                BoolExpr tmp = ctx.mkBoolConst(((DagLeafNode) root).getVarInWorld(l));
+                DagLeafNode var = (DagLeafNode) root;
+                String varInWorld = var.getVarInWorld(l);
+                BoolExpr tmp = ctx.mkBoolConst(varInWorld);
                 addExpr(tmp);
                 return tmp;
             }
