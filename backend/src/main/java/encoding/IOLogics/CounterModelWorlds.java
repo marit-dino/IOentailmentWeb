@@ -2,11 +2,15 @@ package encoding.IOLogics;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Countermodel for the causal I/O logics.
  */
 public class CounterModelWorlds implements CounterModel {
+    private static final Logger logger = LogManager.getLogger();
+
     private Map<String, Map<String, Boolean>> in;
     private Map<String, Map<String, Boolean>> out;
 
