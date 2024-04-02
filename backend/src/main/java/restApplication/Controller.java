@@ -1,5 +1,7 @@
 package restApplication;
 
+import encoding.EntailmentProblem;
+import encoding.IOLogics.CounterModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -22,9 +24,15 @@ public class Controller {
     @PostMapping("/entailment")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public boolean postEntailmentProblem(@RequestBody ProblemInput problemInput) throws ValidationException {
+    public ResponseEntity<ResponseDTO> postEntailmentProblem(@RequestBody ProblemInput problemInput) throws ValidationException {
         logger.info("POST /entailment");
-        return ProblemSolver.solveProblem(problemInput);
+        EntailmentProblem p = ProblemSolver.getInput(problemInput);
+        boolean entails = p.entails();
+        CounterModel counterModel = p.getCounterModel();
+        ResponseDTO responseDTO = new ResponseDTO();
+        responseDTO.setEntails(entails);
+        responseDTO.setCounterModel(counterModel);
+        return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 
 

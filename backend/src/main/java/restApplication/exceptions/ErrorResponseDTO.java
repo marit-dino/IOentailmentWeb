@@ -6,11 +6,11 @@ import java.util.List;
 /**
  * Represents a response to the client in the case of an error.
  */
-public class ResponseDTO {
+public class ErrorResponseDTO {
     public List<ErrorDTO> errors;
     public String time;
 
-    public ResponseDTO() {
+    public ErrorResponseDTO() {
         this.errors = new ArrayList<>();
     }
 

@@ -4,8 +4,10 @@ import encoding.EntailmentProblem;
 import org.junit.Test;
 import parser.ParseException;
 import util.DagNode;
+import encoding.IOLogics.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static encoding.IOLogics.PairPreparer.prepareDerivingPairs;
 import static encoding.IOLogics.PairPreparer.prepareGoalPair;
@@ -103,5 +105,39 @@ public class OUT_2_CTest {
         EntailmentProblem ent = new OUT_2_C(goalPair, derivingPairs);
 
         assertFalse(ent.entails());
+    }
+
+    @Test
+    public void entails_DerivFromBot() throws ParseException {
+        List<DagNode> derivingPairs = prepareDerivingPairs("");
+        DagNode goalPair = prepareGoalPair("(F, A)");
+        EntailmentProblem ent = new OUT_2_C(goalPair, derivingPairs);
+        assertTrue(ent.entails());
+        CounterModel m = ent.getCounterModel();
+        assertTrue(m == null);
+    }
+
+    @Test
+    public void NotEntails_killBoss_fromContradictoryObligations() throws ParseException {
+        List<DagNode> derivingPairs = prepareDerivingPairs("(T, lawful), (~lawful, erase), (lawful, ~erase)");
+        DagNode goalPair = prepareGoalPair("(~lawful, kill_boss)");
+        EntailmentProblem ent = new OUT_2_C(goalPair, derivingPairs);
+        assertFalse(ent.entails());
+        CounterModel m = ent.getCounterModel();
+        assertTrue(m instanceof CounterModelWorlds);
+        CounterModelWorlds mw = (CounterModelWorlds) m;
+        Map<String, Map<String, Boolean>> in = mw.getIn();
+        Map<String, Map<String, Boolean>> out = mw.getOut();
+
+        for(String var : in.keySet()){
+            assertTrue(var.equals("lawful"));
+            for(String world : in.get(var).keySet()){
+                assertFalse(in.get(var).get(world));
+            }
+        }
+
+        assertTrue(out.get("erase").get("w0"));
+        assertTrue(out.get("lawful").get("w0"));
+        assertFalse(out.get("kill_boss").get("w0"));
     }
 }

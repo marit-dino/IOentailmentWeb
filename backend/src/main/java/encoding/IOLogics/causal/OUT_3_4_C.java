@@ -2,6 +2,7 @@ package encoding.IOLogics.causal;
 
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
+import encoding.IOLogics.CounterModelWorlds;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import util.DagNode;
@@ -25,4 +26,5 @@ public abstract class OUT_3_4_C extends OUT_C {
         }
         return ctx.mkAnd(copies);
     }
+
 }

@@ -2,12 +2,15 @@ package encoding.IOLogics.originals;
 
 import com.microsoft.z3.*;
 import encoding.EntailmentProblem;
+import encoding.IOLogics.CounterModelClassical;
+import encoding.IOLogics.CounterModel;
 import encoding.IOLogics.causal.OUT_C;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import util.DagLeafNode;
 import util.DagNode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,24 +20,53 @@ public abstract class OUT implements EntailmentProblem {
     private static final Logger logger = LogManager.getLogger();
 
     private OUT_C causalCounterpart;
+    private Model counterModel;
+    private List<BoolExpr> exprs;
+    private Context ctx;
+
+
 
     public OUT(OUT_C causalCounterpart) {
+        this.exprs = new ArrayList<>();
         this.causalCounterpart = causalCounterpart;
     }
 
     public boolean entails() {
         logger.trace("entails()");
 
-        try (Context ctx = new Context();) {
-            Solver s = ctx.mkSolver();
-            BoolExpr causalFormula = causalCounterpart.completeFormula(ctx);
-            BoolExpr conj = conjunction(ctx);
-            BoolExpr completeFormula = ctx.mkOr(causalFormula, conj);
-            s.add(new BoolExpr[]{completeFormula});
-            Status res = s.check();
-            if(res.equals(Status.UNSATISFIABLE)) return true;
+        boolean causalEntails = causalCounterpart.entails();
+
+        if(!causalEntails) return false;
+
+        ctx = getContext();
+        BoolExpr classicalEnt = conjunction(ctx);
+
+        Solver s = ctx.mkSolver();
+        Status res = s.check(classicalEnt);
+        if (res.equals(Status.UNSATISFIABLE)) {
+            ctx.close();
+            return true;
         }
+        this.counterModel = s.getModel();
         return false;
+    }
+
+
+
+    @Override
+    public CounterModel getCounterModel() {
+        logger.trace("getCounterModel()");
+        if(this.counterModel == null) return this.causalCounterpart.getCounterModel();
+
+        CounterModelClassical model = new CounterModelClassical();
+
+        for (BoolExpr expr : this.exprs) {
+            String var = expr.toString();
+            boolean value = this.counterModel.eval(expr, false).isTrue();
+            model.add(var, value);
+        }
+        ctx.close();
+        return model;
     }
 
     /**
@@ -83,7 +115,9 @@ public abstract class OUT implements EntailmentProblem {
                 return ctx.mkNot(formula(ctx, root.getChild(0)));
             }
             case VAR -> {
-                return ctx.mkBoolConst(((DagLeafNode) root).getVar());
+                BoolExpr tmp =  ctx.mkBoolConst(((DagLeafNode) root).getVar());
+                addExpr(tmp);
+                return tmp;
             }
             case TRUE -> {
                 return ctx.mkTrue();
@@ -93,5 +127,24 @@ public abstract class OUT implements EntailmentProblem {
             }
             default -> throw new RuntimeException("Error while encoding formula in propositional logic, encountered unexpected node type " + root.getType());
         }
+    }
+
+    /**
+     * Adds expression to expression list
+     * @param expr to add
+     */
+    private void addExpr(BoolExpr expr){
+        logger.trace("addExpr({})", expr);
+        if(!exprs.contains(expr)) this.exprs.add(expr);
+    }
+
+    /**
+     * Singleton getter for context
+     * @return context
+     */
+    public Context getContext() {
+        logger.trace("getContext()");
+        if(ctx == null) ctx = new Context();
+        return this.ctx;
     }
 }

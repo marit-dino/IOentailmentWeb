@@ -4,8 +4,10 @@ import encoding.EntailmentProblem;
 import org.junit.Test;
 import parser.ParseException;
 import util.DagNode;
+import encoding.IOLogics.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static encoding.IOLogics.PairPreparer.prepareDerivingPairs;
 import static encoding.IOLogics.PairPreparer.prepareGoalPair;
@@ -103,5 +105,23 @@ public class OUT_3_CTest {
         EntailmentProblem ent = new OUT_3_C(goalPair, derivingPairs);
 
         assertFalse(ent.entails());
+    }
+
+    @Test
+    public void entails_DerivFromBot() throws ParseException {
+        List<DagNode> derivingPairs = prepareDerivingPairs("");
+        DagNode goalPair = prepareGoalPair("(F, A)");
+        EntailmentProblem ent = new OUT_3_C(goalPair, derivingPairs);
+        assertTrue(ent.entails());
+        CounterModel m = ent.getCounterModel();
+        assertTrue(m == null);
+    }
+
+    @Test
+    public void entails_killBoss_fromContradictoryObligations() throws ParseException {
+        List<DagNode> derivingPairs = prepareDerivingPairs("(T, lawful), (~lawful, erase), (lawful, ~erase)");
+        DagNode goalPair = prepareGoalPair("(~lawful, kill_boss)");
+        EntailmentProblem ent = new OUT_3_C(goalPair, derivingPairs);
+        assertTrue(ent.entails());
     }
 }

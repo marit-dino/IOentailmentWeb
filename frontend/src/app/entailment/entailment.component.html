@@ -64,62 +64,16 @@
   </div>
   <button class="btn btn-outline-primary" [disabled]="!inputForm.valid" type="submit">solve</button>
   <div id="message">
-    <div @trigger *ngIf="entails" id="entailsMessageTrue">&#8658; Deriving pairs entail the goal pair.</div>
-    <div @trigger *ngIf="!entails && entails != undefined" id="entailsMessageFalse">&#8658; Deriving pairs do not entail the goal pair.</div>
+    <div @trigger *ngIf="response?.entails" id="entailsMessageTrue">&#8658; Deriving pairs entail the goal pair.</div>
+    <div @trigger *ngIf="(!response?.entails) && (response != undefined)" id="entailsMessageFalse">
+      &#8658; Deriving pairs do not entail the goal pair.
+    </div>
   </div>
   <div *ngIf="serverNotReachable" class="text-danger">
     The server is not reachable, try again later.
   </div>
 </form>
-
-<div class="container text-container">
-<p>
-  Using a SAT-Solver this program efficiently solves the entailment problem for the Input/Output Logics
-  OUT <sub>1</sub>, OUT  <sub>2</sub>, OUT  <sub>3</sub>, OUT  <sub>4</sub> and their causal counterparts
-  OUT <sub>1</sub> <sup> ⊥ </sup>, OUT <sub>2</sub> <sup> ⊥ </sup>, OUT <sub>3</sub> <sup> ⊥ </sup>,  OUT <sub>4</sub> <sup> ⊥ </sup>.
-  For more information on the theoretical background see <a href="https://proceedings.kr.org/2023/15/">"Streamlining Input/Output Logics with Sequent Calculi" </a> by Ciabattoni and Rozplokhas.
-</p>
-  <span class="fw-bold"> Instructions: </span>
-  <ul>
-    <li>
-      Enter the deriving pairs (optional)
-    </li>
-  <li>
-    Enter the goal pair
-  </li>
-  <li>
-    Choose the I/O Logic
-  </li>
-  <li>
-    Press Solve or Enter
-  </li>
-  </ul>
-
-<br>
-  The goal and the deriving pairs have to be in the following EBNF-grammar, whitespace is ignored:<br><br>
-
-&lt;GoalPair&gt; ::= &lt;Pair&gt; <br>
-&lt;DerivingPairs&gt; ::= (&lt;Pair&gt; ("," &lt;Pair&gt;)*)? <br>
-&lt;Pair&gt; ::= "(" &lt;Formula&gt; "," &lt;Formula&gt; ")"<br>
-&lt;Formula&gt; ::= &lt;Var&gt; | &lt;TruthValue&gt; | &lt;UnaryOperation&gt; | "(" &lt;BinaryOperation&gt; ")"<br>
-&lt;BinaryOperation&gt; ::= &lt;Conjunction&gt; | &lt;Disjunction&gt; | &lt;Implication&gt; | &lt;Equivalence&gt;<br>
-&lt;Conjunction&gt; ::= &lt;Formula&gt; "&" &lt;Formula&gt;<br>
-&lt;Disjunction&gt; ::= &lt;Formula&gt; " | " &lt;Formula&gt;<br>
-&lt;Implication&gt; ::= &lt;Formula&gt; "-&gt;" &lt;Formula&gt;<br>
-&lt;Equivalence&gt; ::= &lt;Formula&gt; "&lt;-&gt;" &lt;Formula&gt;<br>
-&lt;UnaryOperator&gt; ::= &lt;Negation&gt;<br>
-&lt;Negation&gt; ::= "~" &lt;Formula&gt;<br>
-&lt;Var&gt; ::= (["a"-"z","A"-"E", "G"-"S", "U"-"Z", "_", "0" - "9"])+<br>
-&lt;TruthValue&gt; ::= &lt;True&gt; | &lt;False&gt;<br>
-&lt;True&gt; ::= "T"<br>
-&lt;False&gt; ::= "F"<br><br>
-                                Example for a goal pair: ((w1 & w2), (~e -&gt; (a &lt;-&gt; b)))<br>
-                                Example for deriving pairs: ((w1 & w2), (~e -&gt; (a &lt;-&gt; b))), (A, B), (~C, (e | (w1 &lt;-&gt; w2)))<br>
-
-
-
-
-</div>
+<app-countermodel @trigger *ngIf="response != undefined" [response] = "response"></app-countermodel>
 </body>
 </html>
 

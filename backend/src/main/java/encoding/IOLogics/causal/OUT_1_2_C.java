@@ -1,5 +1,6 @@
 package encoding.IOLogics.causal;
 
+import encoding.IOLogics.CounterModelWorlds;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import util.DagNode;
@@ -19,4 +20,6 @@ public abstract class OUT_1_2_C extends OUT_C {
         logger.trace("consequent({}, {})", output, ctx);
         return formulaInWorld(ctx, output, 0);
     }
+
+
 }

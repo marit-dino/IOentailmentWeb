@@ -55,6 +55,6 @@ public class DagLeafNode extends DagNode{
      * @return name of variable in world i
      */
     public String getVarInWorld(int i) {
-        return this.var + "[" + i + "]";
+        return this.var + "[w" + i + "]";
     }
 }

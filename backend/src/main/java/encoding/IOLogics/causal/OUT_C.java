@@ -2,12 +2,14 @@ package encoding.IOLogics.causal;
 
 import com.microsoft.z3.*;
 import encoding.EntailmentProblem;
+import encoding.IOLogics.CounterModel;
+import encoding.IOLogics.CounterModelWorlds;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import util.DagLeafNode;
 import util.DagNode;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * Centralizes the common ground between the different causal I/O Logics.
@@ -18,12 +20,16 @@ public abstract class OUT_C implements EntailmentProblem {
     private DagNode goalPair;
     private List<DagNode> derivingPairs;
     private int worlds;
+    private List<BoolExpr> exprs;
+    private Model counterModel;
+    private Context ctx;
 
     public int getWorlds() {
         return worlds;
     }
 
     public OUT_C(DagNode goalPair, List<DagNode> derivingPairs, int worlds) {
+        this.exprs = new ArrayList<>();
         this.goalPair = goalPair;
         this.derivingPairs = derivingPairs;
         this.worlds = worlds;
@@ -33,15 +39,84 @@ public abstract class OUT_C implements EntailmentProblem {
     public boolean entails() {
         logger.trace("entails()");
 
-        try (Context ctx = new Context()) {
-            Solver s = ctx.mkSolver();
-            BoolExpr formula = completeFormula(ctx);
-            s.add(new BoolExpr[]{formula});
-            Status res = s.check();
-            if(res.equals(Status.UNSATISFIABLE)) return true;
+        ctx = getContext();
+        Solver s = ctx.mkSolver();
+        BoolExpr formula = completeFormula(ctx);
+        s.add(new BoolExpr[]{formula});
+        Status res = s.check();
+        if (res.equals(Status.UNSATISFIABLE)) {
+            ctx.close();
+            return true;
         }
+        this.counterModel = s.getModel();
         return false;
     }
+
+    /**
+     * Singleton getter for context
+     * @return context
+     */
+    public Context getContext() {
+        logger.trace("getContext()");
+        if(ctx == null) ctx = new Context();
+        return this.ctx;
+    }
+
+    public CounterModel getCounterModel(){
+        logger.trace("getCounterModel()");
+
+        if(counterModel == null) return null;
+        CounterModelWorlds model = new CounterModelWorlds();
+        for (BoolExpr expr : this.exprs) {
+            addToModel(model, expr);
+        }
+        ctx.close();
+        return model;
+    }
+
+
+    /**
+     * Adds a boolean constant to the model.
+     *
+     * @param model counter model
+     * @param expr expression to add
+     */
+    private void addToModel(CounterModelWorlds model, BoolExpr expr) {
+        logger.trace("addToModel({}, {})", model, expr);
+        String varInWorld = expr.toString();
+        String world = getWorldOfVar(varInWorld);
+        String var = getOriginalVarName(varInWorld);
+        boolean value = this.counterModel.eval(expr, false).isTrue();
+
+        if(world.equals("w0")) model.addToOut(var, world, value);
+        else {
+            model.addToIn(var, world, value);
+        }
+    }
+
+
+    /**
+     * Returns the name of the variable without the world appendix.
+     *
+     * @param str of variable in world
+     * @return original variable name
+     */
+    private String getOriginalVarName(String str){
+        logger.trace("getOriginalVarName({})", str);
+        return str.substring(1, str.indexOf("["));
+    }
+
+    /**
+     * Returns the name of the world.
+     *
+     * @param str of variable in world
+     * @return world
+     */
+    private String getWorldOfVar(String str){
+        logger.trace("getWorldOfVar({})", str);
+        return str.substring(str.indexOf("[") + 1, str.indexOf("]"));
+    }
+
 
     /**
      * Returns a classical propositional formula which is unsatisfiable iff the deriving pairs entail the goal pair.
@@ -105,9 +180,9 @@ public abstract class OUT_C implements EntailmentProblem {
      * Returns the formula represented by a dag node in the given world l, where all instances of variables are replaced
      * by a labeled version according to the world.
      *
-     * @param ctx context
+     * @param ctx  context
      * @param root node of the formula
-     * @param l world
+     * @param l    world
      * @return classical propositional formula
      */
     protected BoolExpr formulaInWorld(Context ctx, DagNode root, int l){
@@ -130,7 +205,11 @@ public abstract class OUT_C implements EntailmentProblem {
                 return ctx.mkNot(formulaInWorld(ctx, root.getChild(0), l));
             }
             case VAR -> {
-                return ctx.mkBoolConst(((DagLeafNode) root).getVarInWorld(l));
+                DagLeafNode var = (DagLeafNode) root;
+                String varInWorld = var.getVarInWorld(l);
+                BoolExpr tmp = ctx.mkBoolConst(varInWorld);
+                addExpr(tmp);
+                return tmp;
             }
             case TRUE -> {
                 return ctx.mkTrue();
@@ -148,6 +227,7 @@ public abstract class OUT_C implements EntailmentProblem {
      * @return goal pair
      */
     public DagNode getGoalPair() {
+        logger.trace("getGoalPair()");
         return goalPair;
     }
 
@@ -157,6 +237,18 @@ public abstract class OUT_C implements EntailmentProblem {
      * @return deriving pairs
      */
     public List<DagNode> getDerivingPairs() {
+        logger.trace("getDerivingPairs()");
         return derivingPairs;
     }
+
+    /**
+     * Adds expression to expression list
+     * @param expr to add
+     */
+    private void addExpr(BoolExpr expr){
+        logger.trace("addExpr({})", expr);
+        if(!exprs.contains(expr)) this.exprs.add(expr);
+    }
+
+
 }

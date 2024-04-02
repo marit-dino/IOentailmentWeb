@@ -53,7 +53,7 @@ public class ProblemSolver {
      * @throws ValidationException if parsing fails or a field is null
      * @return instance of the entailment problem with the deriving pairs, goal pair and the I/O Logic
      */
-    private static EntailmentProblem getInput(ProblemInput p) throws ValidationException {
+    public static EntailmentProblem getInput(ProblemInput p) throws ValidationException {
         logger.trace("getInput({})", p);
         List<String[]> errors = new ArrayList<>();
 
