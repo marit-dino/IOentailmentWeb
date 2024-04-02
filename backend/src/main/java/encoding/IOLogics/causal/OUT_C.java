@@ -74,7 +74,15 @@ public abstract class OUT_C implements EntailmentProblem {
         return model;
     }
 
+
+    /**
+     * Adds a boolean constant to the model.
+     *
+     * @param model counter model
+     * @param expr expression to add
+     */
     private void addToModel(CounterModelWorlds model, BoolExpr expr) {
+        logger.trace("addToModel({}, {})", model, expr);
         String varInWorld = expr.toString();
         String world = getWorldOfVar(varInWorld);
         String var = getOriginalVarName(varInWorld);
@@ -86,11 +94,26 @@ public abstract class OUT_C implements EntailmentProblem {
         }
     }
 
+
+    /**
+     * Returns the name of the variable without the world appendix.
+     *
+     * @param str of variable in world
+     * @return original variable name
+     */
     private String getOriginalVarName(String str){
+        logger.trace("getOriginalVarName({})", str);
         return str.substring(1, str.indexOf("["));
     }
 
+    /**
+     * Returns the name of the world.
+     *
+     * @param str of variable in world
+     * @return world
+     */
     private String getWorldOfVar(String str){
+        logger.trace("getWorldOfVar({})", str);
         return str.substring(str.indexOf("[") + 1, str.indexOf("]"));
     }
 

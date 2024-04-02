@@ -15,7 +15,8 @@ public interface EntailmentProblem {
     boolean entails();
 
     /**
-     * Returns a counter model if the previous usage of entails() returned false, else null is returned
+     * Returns a counter model if the previous usage of entails() returned false, else null is returned.
+     * Can only be called once, as the context is closed after getting the model (clean up)
      * @return a counter model
      */
     CounterModel getCounterModel();
