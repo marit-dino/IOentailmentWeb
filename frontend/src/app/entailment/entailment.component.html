@@ -70,7 +70,8 @@
     </div>
   </div>
   <div *ngIf="serverNotReachable" class="text-danger">
-    The server is not reachable, try again later.
+    The server has a problem, please try again later.
+    If the problem persists contact the person responsible.
   </div>
 </form>
 <app-countermodel @trigger *ngIf="response != undefined" [response] = "response"></app-countermodel>

@@ -76,6 +76,9 @@ export class EntailmentComponent {
           }
           else {
             let arr: Error[] = error.error.errors;
+            if(arr == undefined){
+              this.serverNotReachable = true;
+            }
             for (let i = 0; i < arr.length; i++) {
               if (arr[i].cause == "GoalPairParseException") {
                 this.errorMessageGP += ((this.errorMessageGP.length > 0) ? '\n' : '') + arr[i].message;
