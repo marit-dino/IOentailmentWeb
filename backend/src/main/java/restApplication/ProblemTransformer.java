@@ -28,7 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProblemSolver {
+public class ProblemTransformer {
     private static final Logger logger = LogManager.getLogger();
 
 
