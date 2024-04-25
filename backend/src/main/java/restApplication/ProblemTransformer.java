@@ -28,22 +28,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProblemSolver {
+public class ProblemTransformer {
     private static final Logger logger = LogManager.getLogger();
-
-    /**
-     * Solves the entailment problem for the problem given.
-     *
-     * @param problemInput to be solved
-     * @throws ValidationException if parsing fails or a field is null
-     * @return whether deriving pairs entail goal pair or not
-     */
-    public static boolean solveProblem(ProblemInput problemInput) throws ValidationException{
-        logger.trace("solveProblem({})", problemInput);
-        EntailmentProblem p = null;
-        p = getInput(problemInput);
-        return p.entails();
-    }
 
 
     /**
