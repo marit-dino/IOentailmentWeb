@@ -25,7 +25,7 @@ public class Controller {
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<ResponseDTO> postEntailmentProblem(@RequestBody ProblemInput problemInput) throws ValidationException {
-        logger.info("POST /entailment");
+        logger.info("POST /entailment {}", problemInput);
         EntailmentProblem p = ProblemTransformer.getInput(problemInput);
         boolean entails = p.entails();
         CounterModel counterModel = p.getCounterModel();
